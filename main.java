@@ -1,8 +1,10 @@
+import javax.swing.text.View;
+
 public class main extends javafx.application.Application {
 
     @Override
     public void start(javafx.stage.Stage primaryStage) throws Exception {
-        javafx.scene.Parent root = javafx.fxml.FXMLLoader.load(getClass().getResource("sample.fxml"));
+        javafx.scene.Parent root = javafx.fxml.FXMLLoader.load(getClass().getResource("View.fxml"));
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new javafx.scene.Scene(root, 300, 275));
         primaryStage.show();
