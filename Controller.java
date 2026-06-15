@@ -1,3 +1,4 @@
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -6,6 +7,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -29,34 +31,90 @@ public class Controller implements Initializable {
     @FXML
     private Label label_result;
 
+    private Thread timerThread;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Initialize CB1 with options (class, String, System)
-        ObservableList<String> options1 = FXCollections.observableArrayList("class", "String", "System");
-        CB1.setItems(options1);
-        CB1.setValue("class");
-        
-        // Initialize CB2 with options (class, String, System)
-        ObservableList<String> options2 = FXCollections.observableArrayList("class", "String", "System");
-        CB2.setItems(options2);
-        CB2.setValue("class");
-        
-        // Initialize CB3 with options (class, String, System)
-        ObservableList<String> options3 = FXCollections.observableArrayList("class", "String", "System");
-        CB3.setItems(options3);
-        CB3.setValue("class");
+        ObservableList<String> options = FXCollections.observableArrayList("", "class", "String", "System");
+        CB1.setItems(options);
+        CB1.setValue("");
+        CB2.setItems(options);
+        CB2.setValue("");
+        CB3.setItems(options);
+        CB3.setValue("");
+
+        startTimer(120);
     }
 
     @FXML
     void on_sumbit(ActionEvent event) {
-        String answer1 = CB1.getValue();
-        String answer2 = CB2.getValue();
-        String answer3 = CB3.getValue();
-        
-        String result = "Q1: " + answer1 + ", Q2: " + answer2 + ", Q3: " + answer3;
-        label_result.setText(result);
-        
-        System.out.println("Selected Answers: " + result);
+        int score = 0;
+        if ("class".equals(CB1.getValue())) score++;
+        if ("String".equals(CB2.getValue())) score++;
+        if ("System".equals(CB3.getValue())) score++;
+        label_result.setText(score + "/3");
     }
 
+    private void startTimer(int seconds) {
+        timerThread = new Thread(() -> {
+            int remaining = seconds;
+            while (remaining >= 0 && !Thread.currentThread().isInterrupted()) {
+                final int display = remaining;
+                Platform.runLater(() -> clock.setText(display + "s"));
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+                remaining--;
+            }
+        });
+        timerThread.setDaemon(true);
+        timerThread.start();
+    }
+
+    public void stopTimer() {
+        if (timerThread != null) {
+            timerThread.interrupt();
+        }
+    }
+
+}
+
+void start_timer() {
+    // This method can be used to start a timer that updates the clock label every second
+    // You can use a Timeline or a ScheduledExecutorService to achieve this
+    Run run = new Run();
+
+    for (int i = 120; i >= 0; i--) {
+        try {
+            Thread.sleep(1000); // Sleep for 1 second
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Update the clock label here using Platform.runLater if needed
+        System.out.println("Running Background Thread"); // Replace this with actual clock label update logic
+    }
+
+    thread = new Thread(run);
+
+    thread.start();
+}
+
+class Run implements Runnable {
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(1000); // Sleep for 1 second
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // Update the clock label here using Platform.runLater if needed
+            System.out.println("Running Background Thread"); // Replace this with actual clock label update logic
+        }
+        thread.setDaemon(true);
+        thread.start();
+    }
 }
